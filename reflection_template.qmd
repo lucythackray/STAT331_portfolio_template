@@ -23,12 +23,16 @@ execute:
 ```{r}
 #| label: wd-1-csv-1
 
+evals <- read_csv(here::here("Week 3", "teacher_evals.csv"))
+
 ```
 
 -   `csv` Example 2
 
 ```{r}
 #| label: wd-1-csv-2
+
+childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-05-09/childcare_costs.csv')
 
 ```
 
@@ -45,6 +49,8 @@ execute:
 
 ```{r}
 #| label: wd-2-ex-1
+
+
 
 ```
 
