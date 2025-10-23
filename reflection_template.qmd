@@ -325,7 +325,17 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-2
-
+#Lab 3
+#USE %IN% INSTEAD OF BAR
+teacher_evals_clean |>
+filter(academic_degree == "dr" | academic_degree == "prof") |>
+  group_by(teacher_id) |>
+  summarize(percent_resp = mean(resp_share), 
+            sex = first(sex), 
+            seniority = first(seniority))|>
+  filter(percent_resp == max(percent_resp) |
+         percent_resp == min(percent_resp)) |>
+  arrange((percent_resp))
 ```
 
 -   Example of function formatting
@@ -390,6 +400,19 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: dvs-2-ex-1
 
+colors<-c("#f07857", "#4fb06d" )
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = species)) +
+  geom_jitter( alpha = 0.5) +
+  geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
+  labs(x = "Weight (g)", y = "Species", color = "Sex",
+       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4fb06d;'>Male</span> rodent species weights") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        legend.position = "none", 
+        plot.subtitle = element_markdown(),
+        axis.ticks.y = element_blank()) +
+scale_color_manual(values = colors)  
 ```
 
 -   I can modify my colors to be accessible to anyone's eyes
@@ -412,11 +435,10 @@ ggplot(data = surveys,
   labs(x = "Weight (g)", y = "Species", color = "Sex",
        subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4fb06d;'>Male</span> rodent species weights") +
   theme_bw() +
-  theme(panel.grid.minor = element_blank()) +
-   theme(
-    legend.position = "none", 
-    plot.subtitle = element_markdown()) +
-   theme(axis.ticks.y = element_blank()) +
+  theme(panel.grid.minor = element_blank(),
+        legend.position = "none", 
+        plot.subtitle = element_markdown(),
+        axis.ticks.y = element_blank()) +
 scale_color_manual(values = colors) 
 ```
 
@@ -432,6 +454,33 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-ex-5
 
+#Lab 4 Q7 - check if it is a nested function
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
+
+ca_childcare |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~factor(Age_class, c("Infant", "Toddler", "Preschool"))) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 ```
 
 **DVS-3: I show creativity in my visualizations**
@@ -555,7 +604,15 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: dvs-6-ex-1
-
+#Lab 4 Q5
+ca_childcare |>
+filter(study_year %in% c(2008, 2018)) |>
+pivot_wider(names_from = study_year,
+            values_from = mhi_2018) |> 
+group_by(region) |>
+summarize(`2008 median household income` = median(`2008`, na.rm = TRUE),
+          `2018 median household income` = median(`2018`, na.rm = TRUE)) |>
+arrange(desc(`2018 median household income`))
 ```
 
 -   I can modify the text in my table to be more readable (e.g., bold face for column headers)
@@ -569,7 +626,15 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: dvs-6-ex-3
-
+#Lab 4 Q5
+ca_childcare |>
+filter(study_year %in% c(2008, 2018)) |>
+pivot_wider(names_from = study_year,
+            values_from = mhi_2018) |> 
+group_by(region) |>
+summarize(`2008 median household income` = median(`2008`, na.rm = TRUE),
+          `2018 median household income` = median(`2018`, na.rm = TRUE)) |>
+arrange(desc(`2018 median household income`))
 ```
 
 **DVS-7: I show creativity in my tables.**
@@ -596,14 +661,39 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: pe-1-one-call
-
+#Lab 5
+facebook_event_checkin |>
+  inner_join(y = person,
+             by = join_by(person_id == id)) |>
+  inner_join(y = drivers_license,
+             by = join_by(license_id == id)) |>
+  filter(car_make == "Tesla",
+         car_model == "Model S",
+         hair_color == "red",
+         height >= 65 & height <= 67,
+         event_name == "SQL Symphony Concert")
 ```
 
 -   using `across()`
 
 ```{r}
 #| label: pe-1-across
-
+#Lab 3 Q5
+teacher_evals_clean <- evals |>
+  rename(sex = gender) |>
+  filter(no_participants >= 10) |>
+  mutate(across(.cols = c(teacher_id, question_no, seniority),
+                .fns = ~ as.factor(.x))) |>
+  select(course_id, 
+         teacher_id, 
+         question_no, 
+         no_participants,
+         resp_share, 
+         SET_score_avg, 
+         percent_failed_cur, 
+         academic_degree, 
+         seniority, 
+         sex)
 ```
 
 -   using functions from the `map()` family
