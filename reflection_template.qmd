@@ -32,7 +32,7 @@ evals <- read_csv(here::here("Week 3", "teacher_evals.csv"))
 ```{r}
 #| label: wd-1-csv-2
 
-childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-05-09/childcare_costs.csv')
+
 
 ```
 
@@ -50,7 +50,22 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 ```{r}
 #| label: wd-2-ex-1
 
-
+#Lab 2 Q5
+teacher_evals_clean <- evals |>
+  rename(sex = gender) |>
+  filter(no_participants >= 10) |>
+  mutate(across(.cols = c(teacher_id, question_no, seniority),
+                .fns = ~ as.factor(.x))) |>
+  select(course_id, 
+         teacher_id, 
+         question_no, 
+         no_participants,
+         resp_share, 
+         SET_score_avg, 
+         percent_failed_cur, 
+         academic_degree, 
+         seniority, 
+         sex)
 
 ```
 
@@ -58,6 +73,8 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 #| label: wd-2-ex-2
+
+
 
 ```
 
@@ -74,6 +91,22 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 #| label: wd-3-numeric-ex-1
+#Lab 3 Q5
+teacher_evals_clean <- evals |>
+  rename(sex = gender) |>
+  filter(no_participants >= 10) |>
+  mutate(across(.cols = c(teacher_id, question_no, seniority),
+                .fns = ~ as.factor(.x))) |>
+  select(course_id, 
+         teacher_id, 
+         question_no, 
+         no_participants,
+         resp_share, 
+         SET_score_avg, 
+         percent_failed_cur, 
+         academic_degree, 
+         seniority, 
+         sex)
 
 ```
 
@@ -88,13 +121,29 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 #| label: wd-3-character
-
+#Lab 4 Q2
+ca_childcare <- childcare_costs |>
+left_join(y = counties) |>
+filter(state_name == "California")
+ca_childcare
 ```
 
 -   Character Example 2 (example must use functions from **stringr**)
 
 ```{r}
 #| label: wd-3-string
+#Lab 5
+get_fit_now_check_in |>
+inner_join(y = get_fit_now_member,
+           by = join_by(membership_id == id)) |>
+inner_join(y = person,
+           by = join_by(person_id == id,
+                        name == name)) |>
+inner_join(y = drivers_license,
+           by = join_by(license_id == id))|>
+  filter(membership_status == "gold",
+         str_detect(plate_number, pattern = "H42W") == TRUE,
+         str_detect(membership_id, pattern = "^48Z") == TRUE)
 
 ```
 
@@ -155,7 +204,11 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 #| label: wd-5-left-ex-1
-
+#Lab 4 Q3
+ca_childcare <- ca_childcare |>
+left_join(y = tax_rev,
+          by = join_by(county_name == entity_name,
+                        study_year == year))
 ```
 
 -   `right_join()` Example 1
@@ -176,14 +229,28 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 #| label: wd-5-inner-ex-1
-
+#Lab 5
+interviewpeople <- interview |>
+inner_join(y = person,
+          by = join_by(person_id == id)) 
 ```
 
 -   `inner_join()` Example 2
 
 ```{r}
 #| label: wd-5-inner-ex-2
-
+#Lab 5
+get_fit_now_check_in |>
+inner_join(y = get_fit_now_member,
+           by = join_by(membership_id == id)) |>
+inner_join(y = person,
+           by = join_by(person_id == id,
+                        name == name)) |>
+inner_join(y = drivers_license,
+           by = join_by(license_id == id))|>
+  filter(membership_status == "gold",
+         str_detect(plate_number, pattern = "H42W") == TRUE,
+         str_detect(membership_id, pattern = "^48Z") == TRUE)
 ```
 
 **WD-6: I can use filtering joins to filter rows from a dataframe.**
@@ -208,14 +275,29 @@ childcare_costs <- read_csv('https://raw.githubusercontent.com/rfordatascience/t
 
 ```{r}
 #| label: wd-7-long
-
+#Lab 4 Q6
+ca_childcare |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") 
 ```
 
 -   `pivot_wider()`
 
 ```{r}
 #| label: wd-7-wide
-
+#Lab 4 Q5
+ca_childcare |>
+filter(study_year %in% c(2008, 2018)) |>
+pivot_wider(names_from = study_year,
+            values_from = mhi_2018) |> 
+group_by(region) |>
+summarize(`2008 median household income` = median(`2008`, na.rm = TRUE),
+          `2018 median household income` = median(`2018`, na.rm = TRUE)) |>
+arrange(desc(`2018 median household income`))
 ```
 
 ## Reproducibility
@@ -322,6 +404,20 @@ The following assignments satisfy the above criteria:
 ```{r}
 #| label: dvs-2-ex-3
 
+colors<-c("#f07857", "#4fb06d" )
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = species)) +
+  geom_jitter( alpha = 0.5) +
+  geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
+  labs(x = "Weight (g)", y = "Species", color = "Sex",
+       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4fb06d;'>Male</span> rodent species weights") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) +
+   theme(
+    legend.position = "none", 
+    plot.subtitle = element_markdown()) +
+   theme(axis.ticks.y = element_blank()) +
+scale_color_manual(values = colors) 
 ```
 
 -   I can modify the text in my plot to be more readable
@@ -344,14 +440,58 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-3-1-ex-1
-
+#Challenge 4 Plot
+colors <- c("#6C88C4", "#FF828B")
+challenge |>
+ mutate(year = as.factor(study_year)) |>
+  ggplot(mapping = aes(x = year,
+                       y = Median_price,
+                       color = type_of_care)) +
+          
+  theme_bw() +
+  geom_jitter (alpha = 0.5, aes(color = type_of_care), show.legend = FALSE) +
+  geom_boxplot(outliers = FALSE) +
+  labs(x = "Study Year",
+       y = "",
+       color = "Type of Childcare",
+       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
+    scale_color_manual(values = colors) +
+  theme(legend.position = "none", 
+        plot.subtitle = element_markdown(),
+        panel.grid.major.x = element_blank()) 
 ```
 
 -   I can use non-standard colors (Example 2)
 
 ```{r}
 #| label: dvs-3-1-ex-2
+#Lab 4 Q7
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 
+ca_childcare |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~factor(Age_class, c("Infant", "Toddler", "Preschool"))) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 ```
 
 -   I can use annotations (e.g., `geom_text()`)
@@ -374,6 +514,15 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dvs-4-summarize
+#Lab 3 Q10
+teacher_evals_clean |>
+  group_by(teacher_id) |>
+  filter(n_distinct(course_id) >= 5, 
+         question_no == "901") |>
+  summarize(mean_rating = mean(SET_score_avg)) |>
+  filter(mean_rating == max(mean_rating) | 
+         mean_rating == min(mean_rating)) |>
+  arrange(mean_rating) 
 
 ```
 
@@ -523,7 +672,31 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: pe-4-2
-
+#Lab 4 Q6
+ca_childcare |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~factor(Age_class, c("Infant", "Toddler", "Preschool"))) + 
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 ```
 
 ## Data Simulation & Statisical Models
@@ -550,6 +723,7 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: dsm-2-1
+
 
 ```
 
