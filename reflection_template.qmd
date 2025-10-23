@@ -173,7 +173,14 @@ inner_join(y = drivers_license,
 
 ```{r}
 #| label: wd-3-date
-
+#Lab 5
+#Revised to mutat date into a date object
+crime_scene_report |>
+mutate(date = ymd(date)) |>
+filter(type == "murder",
+       date == "2018-01-15",
+       city == "SQL City") |>
+pull(description)
 ```
 
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -212,13 +219,73 @@ select(course_id, SET_level, sen_level)
 
 ```{r}
 #| label: wd-4-factor-ex-1
-
+#Lab 4 Q7
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
+ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+mutate(Age_class = fct_relevel(Age_class, c("Infant", "Toddler", "Preschool"))) |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 ```
 
 -   Factor Example 2 (reordering levels)
 
 ```{r}
 #| label: wd-4-factor-ex-2
+#Lab 4 Q7
+#revised to remove nested functions
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
+ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+mutate(Age_class = fct_relevel(Age_class, c("Infant", "Toddler", "Preschool"))) |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 
 ```
 
@@ -233,7 +300,13 @@ select(course_id, SET_level, sen_level)
 
 ```{r}
 #| label: wd-4-date
-
+#Lab 5
+crime_scene_report |>
+mutate(date = ymd(date)) |>
+filter(type == "murder",
+       date == "2018-01-15",
+       city == "SQL City") |>
+pull(description)
 ```
 
 **WD-5: I can use mutating joins to combine multiple dataframes.**
@@ -469,7 +542,36 @@ scale_color_manual(values = colors)
 
 ```{r}
 #| label: dvs-2-cat
-
+#Lab 4 Q7
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
+ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+mutate(Age_class = factor(Age_class, c("Infant", "Toddler", "Preschool"))) |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 ```
 
 -   Dates (time series plot)
@@ -477,6 +579,7 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-date
 
+#Modify challenge 4 to be dates
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
