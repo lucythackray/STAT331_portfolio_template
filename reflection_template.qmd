@@ -31,7 +31,8 @@ evals <- read_csv(here::here("Week 3", "teacher_evals.csv"))
 
 ```{r}
 #| label: wd-1-csv-2
-
+#Lab 2 Q1
+surveys<-read_csv(here::here("Week 2", "surveys.csv"))
 
 
 ```
@@ -83,6 +84,19 @@ teacher_evals_clean <- evals |>
 ```{r}
 #| label: wd-2-ex-3
 
+#Lab 4 Q7 
+#Modified to include starts_with
+ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+mutate(Age_class = factor(Age_class, c("Infant", "Toddler", "Preschool"))) 
 ```
 
 **WD-3: I can filter rows from a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -114,7 +128,15 @@ teacher_evals_clean <- evals |>
 
 ```{r}
 #| label: wd-3-numeric-ex-1
-
+#Lab 4 Q5
+ca_childcare |>
+filter(study_year %in% c(2008, 2018)) |>
+pivot_wider(names_from = study_year,
+            values_from = mhi_2018) |> 
+group_by(region) |>
+summarize(`2008 median household income` = median(`2008`, na.rm = TRUE),
+          `2018 median household income` = median(`2018`, na.rm = TRUE)) |>
+arrange(desc(`2018 median household income`))
 ```
 
 -   Character Example 1 (any context)
@@ -161,12 +183,28 @@ inner_join(y = drivers_license,
 ```{r}
 #| label: wd-4-numeric-ex-1
 
+teacher_evals_compare <- evals |>
+filter(question_no == "903") |>
+mutate(SET_level = if_else(SET_score_avg >= 4, "excellent", "standard"),
+       sen_level = case_when(seniority <= 4 ~ "junior",
+                             seniority > 4 & seniority < 9 ~ "senior",
+                             seniority > 8 ~ "very senior")) |>
+select(course_id, SET_level, sen_level)
+
 ```
 
 -   Numeric Example 2
 
 ```{r}
 #| label: wd-4-numeric-ex-2
+
+teacher_evals_compare <- evals |>
+filter(question_no == "903") |>
+mutate(SET_level = if_else(SET_score_avg >= 4, "excellent", "standard"),
+       sen_level = case_when(seniority <= 4 ~ "junior",
+                             seniority > 4 & seniority < 9 ~ "senior",
+                             seniority > 8 ~ "very senior")) |>
+select(course_id, SET_level, sen_level)
 
 ```
 
@@ -215,13 +253,19 @@ left_join(y = tax_rev,
 
 ```{r}
 #| label: wd-5-right
-
+#Lab 4 Q2
+ca_childcare <- counties |>
+right_join(y = childcare_costs) |>
+filter(state_name == "California")
+ca_childcare
 ```
 
 -   `left_join()` **or** `right_join()` Example 2
 
 ```{r}
 #| label: wd-5-left-right-ex-2
+
+
 
 ```
 
@@ -318,6 +362,26 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-1
+#Challenge 4
+colors <- c("#6C88C4", "#FF828B")
+challenge |>
+ mutate(year = as.factor(study_year)) |>
+  ggplot(mapping = aes(x = year,
+                       y = Median_price,
+                       color = type_of_care)) +
+          
+  theme_bw() +
+  geom_jitter (alpha = 0.5, aes(color = type_of_care), show.legend = FALSE) +
+  geom_boxplot(outliers = FALSE) +
+  labs(x = "Study Year",
+       y = "",
+       color = "Type of Childcare",
+       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
+    scale_color_manual(values = colors) +
+    theme(legend.position = "none", 
+          plot.subtitle = element_markdown(),
+          panel.grid.major.x = element_blank()) 
+  
 
 ```
 
@@ -351,6 +415,7 @@ filter(academic_degree == "dr" | academic_degree == "prof") |>
 
 ```{r}
 #| label: r-3-example
+
 
 ```
 
