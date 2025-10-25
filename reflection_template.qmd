@@ -574,6 +574,9 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-cat
 #Lab 4 Q7
+
+#I strongly recommend against nested functions, as they are difficult for people to understand what your code is doing. Having two lines is not less efficient and is more readable.
+
 colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 ca_childcare |>
 select(starts_with("mc_"),
@@ -742,23 +745,29 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-ex-5
 
-#Lab 4 Q7 - check if it is a nested function
-colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
+#Lab 4 Q7 
 
+#Could you relevel the age variable **before** you use it for facetting?
+
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
 rename(Infant = mc_infant,
        Toddler = mc_toddler,
        Preschool = mc_preschool ) |>
 pivot_longer(cols = Infant: Preschool, 
              names_to = "Age_class", 
              values_to = "Median_price") |>
+mutate(Age_class = fct_relevel(Age_class, c("Infant", "Toddler", "Preschool"))) |>
 ggplot(mapping = aes(x = study_year, 
                      y = Median_price, 
                      color = fct_reorder2(.f = region,
                                           .x = study_year,
                                           .y = Median_price))) + 
   geom_point(size = 0.5) +
-  facet_wrap(~factor(Age_class, c("Infant", "Toddler", "Preschool"))) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
   theme_bw() +
   theme(aspect.ratio = 1) +
   geom_smooth(method = loess, size = 0.5) +
@@ -803,6 +812,10 @@ challenge |>
 ```{r}
 #| label: dvs-3-1-ex-2
 #Lab 4 Q7
+
+
+#Can you match my colors??? These are coming from a package and you will need to expand the color palette to get all 10 colors.
+
 colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 
 ca_childcare |>
@@ -857,7 +870,33 @@ theme(legend.position = "top") #https://r-graph-gallery.com/239-custom-layout-le
 
 ```{r}
 #| label: dvs-3-3
-
+#Challenge 4
+#Revised - I tried using a new geom to show similar information as my original graph but in a way that may be more clear to the viewer.
+colors <- c("#6C88C4", "#FF828B")
+challenge |>
+  select(type_of_care, Median_price, study_year) |>
+  group_by(type_of_care, study_year) |>
+  summarize(Mean = mean(Median_price),
+            sd = sd(Median_price),
+            type_of_care = type_of_care,
+            .groups = "drop") |>
+  mutate(ymin = Mean - sd,
+         ymax = Mean + sd) |>
+  ggplot(aes(x = study_year, y = Mean, color = type_of_care, fill = type_of_care)) +
+  geom_ribbon(aes(ymin = ymin, ymax = ymax, fill = type_of_care), 
+              alpha = 0.2, color = NA) +
+  theme_bw() +
+  geom_line(size = 1) +
+  labs(x = "Study Year",
+       y = "",
+       color = "Type of Childcare",
+       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
+    scale_color_manual(values = colors) +
+    scale_fill_manual(values = colors) +
+    theme(legend.position = "none", 
+          plot.subtitle = element_markdown(),
+          panel.grid.minor.x = element_blank()) +
+    scale_x_continuous(n.breaks = 11)
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
@@ -893,6 +932,7 @@ teacher_evals_clean |>
 #| label: dvs-5-1
 #Lab 3 Q9
 #Modified to use summarize instead of count
+
 teacher_evals_clean |>
   group_by(course_id, teacher_id)|>
   summarize(questions = sum(n_distinct(question_no)), .groups = "drop") |>
@@ -905,6 +945,10 @@ teacher_evals_clean |>
 ```{r}
 #| label: dvs-5-2
 #Lab 4 Q5
+
+#I would recommend using the %in% operator instead of the or!
+#Can you give your column names better titles, so the reader knows what "2008" and "2018" represent? What are the values stored in these columns?
+
 ca_childcare |>
 filter(study_year %in% c(2008, 2018)) |>
 pivot_wider(names_from = study_year,
@@ -922,6 +966,10 @@ arrange(desc(`2018 median household income`))
 ```{r}
 #| label: dvs-6-ex-1
 #Lab 4 Q5
+
+
+#Can you give your column names better titles, so the reader knows what "2008" and "2018" represent? What are the values stored in these columns?
+
 ca_childcare |>
 filter(study_year %in% c(2008, 2018)) |>
 pivot_wider(names_from = study_year,
@@ -944,6 +992,8 @@ arrange(desc(`2018 median household income`))
 ```{r}
 #| label: dvs-6-ex-3
 #Lab 4 Q5
+
+
 ca_childcare |>
 filter(study_year %in% c(2008, 2018)) |>
 pivot_wider(names_from = study_year,
@@ -979,6 +1029,7 @@ arrange(desc(`2018 median household income`))
 ```{r}
 #| label: pe-1-one-call
 #Lab 5
+
 facebook_event_checkin |>
   inner_join(y = person,
              by = join_by(person_id == id)) |>
@@ -1050,6 +1101,10 @@ teacher_evals_clean <- evals |>
 ```{r}
 #| label: pe-3-across
 #Lab 3 Q8
+
+#Your code does a great job filtering across multiple columns. However, the formatting of your code could use a bit of help. Specifically, I would love to see you using named argments and the correct function syntax for the if_any() function:
+
+
 teacher_evals_clean |>
   filter(if_any(.cols = everything(),  
                 .fns = ~ is.na(.x)))
@@ -1076,6 +1131,7 @@ teacher_evals_clean |>
 ```{r}
 #| label: pe-4-1
 #Lab 3 Q8
+
 teacher_evals_clean |>
   filter(if_any(.cols = everything(),  
                 .fns = ~ is.na(.x)))
@@ -1086,20 +1142,26 @@ teacher_evals_clean |>
 ```{r}
 #| label: pe-4-2
 #Lab 4 Q6
+
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
 rename(Infant = mc_infant,
        Toddler = mc_toddler,
        Preschool = mc_preschool ) |>
 pivot_longer(cols = Infant: Preschool, 
              names_to = "Age_class", 
              values_to = "Median_price") |>
+mutate(Age_class = fct_relevel(Age_class, c("Infant", "Toddler", "Preschool"))) |>
 ggplot(mapping = aes(x = study_year, 
                      y = Median_price, 
                      color = fct_reorder2(.f = region,
                                           .x = study_year,
                                           .y = Median_price))) + 
   geom_point(size = 0.5) +
-  facet_wrap(~factor(Age_class, c("Infant", "Toddler", "Preschool"))) + 
+  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
   theme_bw() +
   theme(aspect.ratio = 1) +
   geom_smooth(method = loess, size = 0.5) +
@@ -1137,6 +1199,7 @@ ggplot(mapping = aes(x = study_year,
 ```{r}
 #| label: dsm-2-1
 #Lab 2 Q17
+
 species_mod <- aov(weight ~ species, data = surveys)
 summary(species_mod)
 ```
@@ -1146,6 +1209,7 @@ summary(species_mod)
 ```{r}
 #| label: dsm-2-2
 #Lab 1 Q9
+
 t.test(len ~ supp, data = ToothGrowth)
 ```
 
@@ -1154,7 +1218,11 @@ t.test(len ~ supp, data = ToothGrowth)
 ```{r}
 #| label: dsm-2-3
 #Challenge 3 Q3
+
+#This works, but did you need to make a contingency table? Could you have input these vectors directly into the chisq.test() function?
+
 #Revised to not include a contingency table
+
 chisq.test(teacher_evals_compare$SET_level,
            teacher_evals_compare$sen_level)
 ```
