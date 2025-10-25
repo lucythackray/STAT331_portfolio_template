@@ -611,6 +611,36 @@ ggplot(mapping = aes(x = study_year,
 #| label: dvs-2-date
 
 #Modify challenge 4 to be dates
+
+colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
+ca_childcare |>
+select(starts_with("mc_"),
+       study_year,
+       region) |>
+rename(Infant = mc_infant,
+       Toddler = mc_toddler,
+       Preschool = mc_preschool ) |>
+pivot_longer(cols = Infant: Preschool, 
+             names_to = "Age_class", 
+             values_to = "Median_price") |>
+mutate(Age_class = fct_relevel(Age_class, c("Infant", "Toddler", "Preschool"))) |>
+ggplot(mapping = aes(x = study_year, 
+                     y = Median_price, 
+                     color = fct_reorder2(.f = region,
+                                          .x = study_year,
+                                          .y = Median_price))) + 
+  geom_point(size = 0.5) +
+  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+  theme_bw() +
+  theme(aspect.ratio = 1) +
+  geom_smooth(method = loess, size = 0.5) +
+  labs(x = "Study Year", 
+       y = " ", 
+       subtitle = "Weekly Median Price for Center Based Childcare ($)",
+       color = "California Region") +
+  scale_x_continuous(n.breaks = 6) +
+  scale_color_manual(values = colors) +
+  theme(text = element_text(size = 7)) 
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
@@ -620,19 +650,21 @@ ggplot(mapping = aes(x = study_year,
 ```{r}
 #| label: dvs-2-ex-1
 
-colors<-c("#f07857", "#4fb06d" )
+colors<-c("#f07857", "#4895ef" )
 ggplot(data = surveys,
        mapping = aes(x = weight, y = species)) +
   geom_jitter( alpha = 0.5) +
   geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
   labs(x = "Weight (g)", y = "Species", color = "Sex",
-       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4fb06d;'>Male</span> rodent species weights") +
+       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4895ef;'>Male</span> rodent species weights") +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
         legend.position = "none", 
-        plot.subtitle = element_markdown(),
-        axis.ticks.y = element_blank()) +
-scale_color_manual(values = colors)  
+        plot.subtitle = element_markdown(size = 15),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size = 9), 
+        axis.text.y = element_text(size = 9)) +
+scale_color_manual(values = colors)   
 ```
 
 -   I can modify my colors to be accessible to anyone's eyes
@@ -640,6 +672,21 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-ex-2
 
+colors<-c("#f07857", "#4895ef" )
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = species)) +
+  geom_jitter( alpha = 0.5) +
+  geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
+  labs(x = "Weight (g)", y = "Species", color = "Sex",
+       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4895ef;'>Male</span> rodent species weights") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        legend.position = "none", 
+        plot.subtitle = element_markdown(size = 15),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size = 9), 
+        axis.text.y = element_text(size = 9)) +
+scale_color_manual(values = colors)  
 ```
 
 -   I can modify my plot titles to clearly communicate the data context
@@ -647,26 +694,47 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-ex-3
 
-colors<-c("#f07857", "#4fb06d" )
-ggplot(data = surveys,
-       mapping = aes(x = weight, y = species)) +
-  geom_jitter( alpha = 0.5) +
-  geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
-  labs(x = "Weight (g)", y = "Species", color = "Sex",
-       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4fb06d;'>Male</span> rodent species weights") +
+colors <- c("#6C88C4", "#FF828B")
+challenge |>
+ mutate(year = as.factor(study_year)) |>
+  ggplot(mapping = aes(x = year,
+                       y = Median_price,
+                       color = type_of_care)) +
+          
   theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        legend.position = "none", 
-        plot.subtitle = element_markdown(),
-        axis.ticks.y = element_blank()) +
-scale_color_manual(values = colors) 
+  geom_jitter (alpha = 0.5, aes(color = type_of_care), show.legend = FALSE) +
+  geom_boxplot(outliers = FALSE) +
+  labs(x = "Study Year",
+       y = "",
+       color = "Type of Childcare",
+       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
+    scale_color_manual(values = colors) +
+    theme(legend.position = "none", 
+          plot.subtitle = element_markdown(),
+          panel.grid.major.x = element_blank()) 
+  
 ```
 
 -   I can modify the text in my plot to be more readable
 
 ```{r}
 #| label: dvs-2-ex-4
-
+#Challenge 2
+colors<-c("#f07857", "#4895ef" )
+ggplot(data = surveys,
+       mapping = aes(x = weight, y = species)) +
+  geom_jitter( alpha = 0.5) +
+  geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
+  labs(x = "Weight (g)", y = "Species", color = "Sex",
+       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4895ef;'>Male</span> rodent species weights") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank(),
+        legend.position = "none", 
+        plot.subtitle = element_markdown(size = 15),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size = 9), 
+        axis.text.y = element_text(size = 9)) +
+scale_color_manual(values = colors) 
 ```
 
 -   I can reorder my legend to align with the colors in my plot
@@ -767,7 +835,22 @@ ggplot(mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-3-2
-
+#Challenge 3 Q2
+#Revised to practice adding labels to a stacked bar chart
+colors <- c("#b796d4", "#ba955c")
+ggplot(data = teacher_evals_compare, mapping = aes(x = sen_level, fill = SET_level, label = SET_level)) +
+geom_bar(position = "fill", ) +
+labs(x = "Years of Experience",
+     title = "Evaluation of Teacher's Use of Activities",
+     fill = "Evaluation Rating") +
+theme_bw() +
+geom_text(aes(label = SET_level),
+              stat = "count", 
+              position = position_fill(vjust = 0.5)) + #https://stackoverflow.com/questions/12018499/how-to-put-labels-over-geom-bar-for-each-bar-in-r-with-ggplot2
+scale_fill_manual(values = colors) + 
+scale_y_continuous(labels = scales::percent) +
+#https://stackoverflow.com/questions/27433798/how-can-i-change-the-y-axis-figures-into-percentages-in-a-barplot
+theme(legend.position = "top") #https://r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
 ```
 
 -   I can choose creative geometries (e.g., `geom_segment()`, `geom_ribbon)()`)
@@ -969,7 +1052,7 @@ teacher_evals_clean <- evals |>
 #Lab 3 Q8
 teacher_evals_clean |>
   filter(if_any(.cols = everything(),  
-           .fns = ~ is.na(.x)))
+                .fns = ~ is.na(.x)))
 ```
 
 -   using a `map()` function with **one** input (e.g., `map()`, `map_chr()`, `map_dbl()`, etc.)
@@ -992,7 +1075,10 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: pe-4-1
-
+#Lab 3 Q8
+teacher_evals_clean |>
+  filter(if_any(.cols = everything(),  
+                .fns = ~ is.na(.x)))
 ```
 
 -   I can connect a data wrangling pipeline into a `ggplot()`
