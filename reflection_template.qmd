@@ -449,11 +449,11 @@ arrange(desc(`2018 median household income`))
 
 The following assignments satisfy the above criteria:
 
--   Example 1
--   Example 2
--   Example 3
--   Example 4
--   Example 5
+-   Lab 3
+-   Challenge 3
+-   Lab 4
+-   Challenge 4
+-   Lab 5
 
 **R-2: I can write well documented and tidy code.**
 
@@ -1230,6 +1230,8 @@ chisq.test(teacher_evals_compare$SET_level,
 ## Revising My Thinking
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
+
+Throughout this class, I have revised my thinking by doing revisions on my lab and challenge assignments, and by incorporation feedback I got into future assignments. I submitted revisions for all the assignments I received growings on that involved more than a quick fix. For smaller things like formatting or switching an operation, I made sure to incorporatie those changes into my next assignments. I included feedback that I received in the sections of the portfolio where I showed how I incorporated that feedback into my code. I improved my tidy code writing throughout the course using the feedback I got from peer code reviews
 
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
