@@ -1231,7 +1231,9 @@ chisq.test(teacher_evals_compare$SET_level,
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
-Throughout this class, I have revised my thinking by doing revisions on my lab and challenge assignments, and by incorporation feedback I got into future assignments. I submitted revisions for all the assignments I received growings on that involved more than a quick fix. For smaller things like formatting or switching an operation, I made sure to incorporatie those changes into my next assignments. I included feedback that I received in the sections of the portfolio where I showed how I incorporated that feedback into my code. I improved my tidy code writing throughout the course using the feedback I got from peer code reviews
+I included feedback that I received in the sections of the portfolio where I showed how I incorporated that feedback into my code.
+
+Throughout this class, I have revised my thinking by doing revisions on my lab and challenge assignments, and by incorporating feedback I got into future assignments. I submitted revisions for all the assignments I received growings on that involved more than a quick fix. For smaller things like formatting or switching an operation, I made sure to incorporate those changes into my next assignments, while for more major issues, I revised my work and resubmitted it to better understand what I did wrong and whether I had successfully improved it. I also improved my tidy code writing skills throughout the course using the feedback I got from peer code reviews.
 
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
@@ -1239,8 +1241,14 @@ Throughout this class, I have revised my thinking by doing revisions on my lab a
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
+Throughout this course, I worked on extending my thinking by combining different skills that we have learned to make my code as efficient and effective as possible. I have pushed myself on the challenge assignments, for example in in Challenge 2 I tried to combine all 3 of the options to make a unique and easy to read plot. If there was something I was struggling to do, I either asked questions or did research online in order to figure out the best way to do it.
+
 ## Peer Support & Collaboration
 
 <!-- Include an image or a description of feedback you gave that you are proud of (either in a peer review or in Discord). -->
 
+This was a code review that I gave for lab 5: Overall your code looks really good! You did a great job following the tidy code guidelines; you used named arguments, ended lines with pipes and didn't let any lines of code get too long. You also did a great job leaving spaces around all operators. The only note I have is that you saved a lot of objects that you don't necessarily need in this situation. For example when finding the first two witness interviews, and finding further information about the people seen at the gym, you don't need to save an object and print it each time, you could have the pipeline directly output the information you want by just removing the assignment operation. This would just declutter your code a bit, but other than that I thought it looked great!
+
 <!-- Include a description of how you grew as a collaborator through the weekly pair programming activities.   -->
+
+For the practice activities, it was kind of tricky at the very beginning to get used to the alternating roles, but after the first time I felt like I got a lot better at both clearly explaining my thoughts when I was the developer, and following my partner's ideas when I was the coder. In particular, I got a lot more comfortable with just trying something to see if it worked before giving my own input on whether I thought it would work or not. This helped me to be more open to different ways to do things, and I got better at waiting to offer input until I was asked. Working with a partner, seeing someone else's way of doing things, and talking through problems was also really helpful in learning and getting better at using the methods we learned in class.
