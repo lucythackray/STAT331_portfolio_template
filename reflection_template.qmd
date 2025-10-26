@@ -10,7 +10,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an A.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from Lab or Challenge assignments where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -157,7 +157,7 @@ ca_childcare
 
 ```{r}
 #| label: wd-3-string
-#Lab 5
+#Lab 5 Following witness leads
 get_fit_now_check_in |>
 inner_join(y = get_fit_now_member,
            by = join_by(membership_id == id)) |>
@@ -350,8 +350,7 @@ ca_childcare
 
 ```{r}
 #| label: wd-5-left-right-ex-2
-
-#Lab 5
+#Lab 5 Inspecting witness statements
 interviewpeople <- interview |>
 right_join(y = person,
           by = join_by(person_id == id)) 
@@ -361,7 +360,7 @@ right_join(y = person,
 
 ```{r}
 #| label: wd-5-inner-ex-1
-#Lab 5
+#Lab 5 Finding mastermind
 facebook_event_checkin |>
   inner_join(y = person,
              by = join_by(person_id == id)) |>
@@ -378,7 +377,7 @@ facebook_event_checkin |>
 
 ```{r}
 #| label: wd-5-inner-ex-2
-#Lab 5
+#Lab 5 Following witness leads
 get_fit_now_check_in |>
 inner_join(y = get_fit_now_member,
            by = join_by(membership_id == id)) |>
@@ -1233,7 +1232,7 @@ chisq.test(teacher_evals_compare$SET_level,
 
 I included feedback that I received in the sections of the portfolio where I showed how I incorporated that feedback into my code.
 
-Throughout this class, I have revised my thinking by doing revisions on my lab and challenge assignments, and by incorporating feedback I got into future assignments. I submitted revisions for all the assignments I received growings on that involved more than a quick fix. For smaller things like formatting or switching an operation, I made sure to incorporate those changes into my next assignments, while for more major issues, I revised my work and resubmitted it to better understand what I did wrong and whether I had successfully improved it. I also improved my tidy code writing skills throughout the course using the feedback I got from peer code reviews.
+Throughout this class, I have revised my thinking by doing revisions on my lab and challenge assignments, and by incorporating feedback I got into future assignments. I submitted revisions for all the assignments I received growings on that involved more than a quick fix. For smaller things like formatting or switching an operation, I made sure to incorporate those changes into my next assignments, while for more major issues, I revised my work and resubmitted it to better understand what I did wrong and whether I had successfully improved it. For all of my revisions I made sure to fully understand why I needed to revise it, and how my revised code was better than the original. I also improved my tidy code writing skills throughout the course using the feedback I got from peer code reviews.
 
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
@@ -1241,7 +1240,7 @@ Throughout this class, I have revised my thinking by doing revisions on my lab a
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
-Throughout this course, I worked on extending my thinking by combining different skills that we have learned to make my code as efficient and effective as possible. I have pushed myself on the challenge assignments, for example in in Challenge 2 I tried to combine all 3 of the options to make a unique and easy to read plot. If there was something I was struggling to do, I either asked questions or did research online in order to figure out the best way to do it.
+Throughout this course, I worked on extending my thinking by combining different skills that we have learned to make my code as efficient and effective as possible. I asked questions in class to ensure that I fully understood what I was doing with my code and to clarify how could improve it. I have pushed myself on the challenge assignments, for example in in Challenge 2 I tried to combine all 3 of the options to make a unique and easy to read plot. During the lab and challenge activities, if there was something I was struggling to do, I either asked questions or did research online in order to figure out the best way to do it.
 
 ## Peer Support & Collaboration
 
