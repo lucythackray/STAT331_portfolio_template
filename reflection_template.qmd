@@ -22,6 +22,9 @@ execute:
 
 ```{r}
 #| label: wd-1-csv-1
+#Lab 3 Q2
+
+#You are not utilizing the features of an R project! You can load the data based on a **relative** path (from where the project lives) rather than a **full** path.
 
 evals <- read_csv(here::here("Week 3", "teacher_evals.csv"))
 
@@ -50,7 +53,6 @@ surveys<-read_csv(here::here("Week 2", "surveys.csv"))
 
 ```{r}
 #| label: wd-2-ex-1
-
 #Lab 3 Q5
 teacher_evals_clean <- evals |>
   rename(sex = gender) |>
@@ -77,8 +79,8 @@ teacher_evals_clean <- evals |>
 #Lab 3 Q7
 #Revised to remove unwanted columns rather than keep wanted ones
 counts <- teacher_evals_clean |>
-distinct(teacher_id, .keep_all = TRUE) |>
-select(-course_id, -(question_no:percent_failed_cur))
+  distinct(teacher_id, .keep_all = TRUE) |>
+  select(-course_id, -(question_no:percent_failed_cur))
 
 ```
 
@@ -86,7 +88,6 @@ select(-course_id, -(question_no:percent_failed_cur))
 
 ```{r}
 #| label: wd-2-ex-3
-
 #Lab 4 Q7 
 #Modified to include starts_with
 ca_childcare |>
@@ -150,7 +151,7 @@ arrange(desc(`2018 median household income`))
 ca_childcare <- childcare_costs |>
 left_join(y = counties) |>
 filter(state_name == "California")
-ca_childcare
+
 ```
 
 -   Character Example 2 (example must use functions from **stringr**)
@@ -193,7 +194,7 @@ pull(description)
 
 ```{r}
 #| label: wd-4-numeric-ex-1
-
+#Challenge 3 Q1
 teacher_evals_compare <- evals |>
 filter(question_no == "903") |>
 mutate(SET_level = if_else(SET_score_avg >= 4, "excellent", "standard"),
@@ -208,7 +209,7 @@ select(course_id, SET_level, sen_level)
 
 ```{r}
 #| label: wd-4-numeric-ex-2
-
+#Challenge 3 Q1
 teacher_evals_compare <- evals |>
 filter(question_no == "903") |>
 mutate(SET_level = if_else(SET_score_avg >= 4, "excellent", "standard"),
@@ -343,7 +344,7 @@ left_join(y = tax_rev,
 ca_childcare <- counties |>
 right_join(y = childcare_costs) |>
 filter(state_name == "California")
-ca_childcare
+
 ```
 
 -   `left_join()` **or** `right_join()` Example 2
@@ -460,7 +461,7 @@ The following assignments satisfy the above criteria:
 
 ```{r}
 #| label: r-2-1
-#Challenge 4
+#Challenge 4 plot
 colors <- c("#6C88C4", "#FF828B")
 challenge |>
  mutate(year = as.factor(study_year)) |>
@@ -538,6 +539,9 @@ filter(mcsa == min(mcsa))
 ```{r}
 #| label: dvs-1-num
 #Lab 4 Q8
+
+#We will talk tomorrow (September 25) about themes and why theme_classic() is not a theme I would recommend using. Please take note!
+
 ca_childcare |>
 ggplot(mapping = aes(x = mhi_2018, y = mc_infant)) +
 geom_point() +
@@ -552,20 +556,23 @@ geom_smooth(method = "lm", color = "salmon") +
 
 ```{r}
 #| label: dvs-2-num-cat
+#Challenge 2 
 
-colors<-c("#f07857", "#4fb06d" )
+colors<-c("#f07857", "#4895ef" )
 ggplot(data = surveys,
        mapping = aes(x = weight, y = species)) +
   geom_jitter( alpha = 0.5) +
   geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
   labs(x = "Weight (g)", y = "Species", color = "Sex",
-       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4fb06d;'>Male</span> rodent species weights") +
+       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4895ef;'>Male</span> rodent species weights") +
   theme_bw() +
   theme(panel.grid.minor = element_blank(),
         legend.position = "none", 
-        plot.subtitle = element_markdown(),
-        axis.ticks.y = element_blank()) +
-scale_color_manual(values = colors) 
+        plot.subtitle = element_markdown(size = 15),
+        axis.ticks.y = element_blank(),
+        axis.text.x = element_text(size = 9), 
+        axis.text.y = element_text(size = 9)) +
+scale_color_manual(values = colors)   
 ```
 
 -   At least two categorical variables
@@ -611,8 +618,7 @@ ggplot(mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-2-date
-
-#Modify challenge 4 to be dates
+#Lab 4 Q7
 
 colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 ca_childcare |>
@@ -651,7 +657,8 @@ ggplot(mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-2-ex-1
-
+#Challenge 2
+#Nice work! These both can go inside the same call to the theme() function! 
 colors<-c("#f07857", "#4895ef" )
 ggplot(data = surveys,
        mapping = aes(x = weight, y = species)) +
@@ -673,7 +680,7 @@ scale_color_manual(values = colors)
 
 ```{r}
 #| label: dvs-2-ex-2
-
+#Challenge 2
 colors<-c("#f07857", "#4895ef" )
 ggplot(data = surveys,
        mapping = aes(x = weight, y = species)) +
@@ -695,7 +702,7 @@ scale_color_manual(values = colors)
 
 ```{r}
 #| label: dvs-2-ex-3
-
+#Challenge 4 Plot
 colors <- c("#6C88C4", "#FF828B")
 challenge |>
  mutate(year = as.factor(study_year)) |>
@@ -992,7 +999,6 @@ arrange(desc(`2018 median household income`))
 #| label: dvs-6-ex-3
 #Lab 4 Q5
 
-
 ca_childcare |>
 filter(study_year %in% c(2008, 2018)) |>
 pivot_wider(names_from = study_year,
@@ -1027,7 +1033,7 @@ arrange(desc(`2018 median household income`))
 
 ```{r}
 #| label: pe-1-one-call
-#Lab 5
+#Lab 5 Finding mastermind
 
 facebook_event_checkin |>
   inner_join(y = person,
@@ -1199,8 +1205,9 @@ ggplot(mapping = aes(x = study_year,
 #| label: dsm-2-1
 #Lab 2 Q17
 
-species_mod <- aov(weight ~ species, data = surveys)
-summary(species_mod)
+#Do you need to save an object here? All I want is to see the output...
+
+summary(aov(weight~species, data = surveys))
 ```
 
 -   Example 2
@@ -1230,9 +1237,9 @@ chisq.test(teacher_evals_compare$SET_level,
 
 <!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
 
-I included feedback that I received in the sections of the portfolio where I showed how I incorporated that feedback into my code.
-
 Throughout this class, I have revised my thinking by doing revisions on my lab and challenge assignments, and by incorporating feedback I got into future assignments. I submitted revisions for all the assignments I received growings on that involved more than a quick fix. For smaller things like formatting or switching an operation, I made sure to incorporate those changes into my next assignments, while for more major issues, I revised my work and resubmitted it to better understand what I did wrong and whether I had successfully improved it. For all of my revisions I made sure to fully understand why I needed to revise it, and how my revised code was better than the original. I also improved my tidy code writing skills throughout the course using the feedback I got from peer code reviews.
+
+I included feedback that I received in the sections of the portfolio where I showed how I incorporated that feedback into my code. I also specified the parts I revised for this portfolio.
 
 <!-- For the revisions included in your Portfolio, to help me understand the nature of your revisions, please denote somehow the feedback I provided you (e.g., boldface, italics, colored text) before your revisions. -->
 
@@ -1240,7 +1247,7 @@ Throughout this class, I have revised my thinking by doing revisions on my lab a
 
 <!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
 
-Throughout this course, I worked on extending my thinking by combining different skills that we have learned to make my code as efficient and effective as possible. I asked questions in class to ensure that I fully understood what I was doing with my code and to clarify how could improve it. I have pushed myself on the challenge assignments, for example in in Challenge 2 I tried to combine all 3 of the options to make a unique and easy to read plot. During the lab and challenge activities, if there was something I was struggling to do, I either asked questions or did research online in order to figure out the best way to do it.
+Throughout this course, I worked on extending my thinking by combining different skills that we have learned to make my code as efficient and effective as possible. I asked questions in class to ensure that I fully understood what I was doing with my code and to clarify how could improve it. I have pushed myself on the challenge assignments as well, for example in in Challenge 2 I tried to combine all 3 of the options to make a unique and easy to read plot. During the lab and challenge activities, if there was something I was struggling to do, I either asked questions or did research online in order to figure out the best way to do it.
 
 ## Peer Support & Collaboration
 
