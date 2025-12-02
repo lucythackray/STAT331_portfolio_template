@@ -538,6 +538,13 @@ filter(mcsa == min(mcsa))
 
 ```{r}
 #| label: r-3-function-stops
+#Lab 7 Q4
+rescale_01 <- function(x) {
+   if (!is.numeric(x))  return(NA)
+   if (!length(x) > 1) return(NA) #https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/length
+   rge <- range(x, na.rm = TRUE) #https://r4ds.hadley.nz/functions#writing-a-function
+   (x - rge[1]) / (rge[2] - rge[1])
+}
 
 ```
 
@@ -681,22 +688,26 @@ scale_color_manual(values = colors)
 
 ```{r}
 #| label: dvs-2-ex-2
-#Challenge 2
-colors<-c("#f07857", "#4895ef" )
-ggplot(data = surveys,
-       mapping = aes(x = weight, y = species)) +
-  geom_jitter( alpha = 0.5) +
-  geom_boxplot(outliers = FALSE, mapping = aes(color = sex)) +
-  labs(x = "Weight (g)", y = "Species", color = "Sex",
-       subtitle = "<span style = 'color:#f07857;'>Female</span> vs <span style = 'color:#4895ef;'>Male</span> rodent species weights") +
+#Lab 7 Q3
+colors <- c("coral1", "cornflowerblue")
+
+trout |>
+ filter(if_any(.cols = everything(),  
+               .fns = ~ is.na(.x))) |>
+  mutate(trip = as.factor(trip),
+         year = as.factor(year)) |>
+  mutate(trip = fct_recode(trip, `Trip 1` = "1", `Trip 2` = "2")) |>
+  ggplot(mapping = aes(x = year, fill = section)) +
+    geom_bar(stat = "count", position = "dodge") +
+  facet_wrap("trip") +
   theme_bw() +
-  theme(panel.grid.minor = element_blank(),
-        legend.position = "none", 
-        plot.subtitle = element_markdown(size = 15),
-        axis.ticks.y = element_blank(),
-        axis.text.x = element_text(size = 9), 
-        axis.text.y = element_text(size = 9)) +
-scale_color_manual(values = colors)  
+  scale_fill_manual(values = colors) +
+  labs(x = "Year", 
+       y = "",
+       title = "Missing Values for Trout Length by Year, Trip, and Section",
+       subtitle = "Number of NAs by Year",
+       fill = "Section") +
+   theme(text = element_text(size = 9))  
 ```
 
 -   I can modify my plot titles to clearly communicate the data context
@@ -870,40 +881,35 @@ geom_text(aes(label = SET_level),
 scale_fill_manual(values = colors) + 
 scale_y_continuous(labels = scales::percent) +
 #https://stackoverflow.com/questions/27433798/how-can-i-change-the-y-axis-figures-into-percentages-in-a-barplot
-theme(legend.position = "top") #https://r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
+theme(legend.position = "none") #https://r-graph-gallery.com/239-custom-layout-legend-ggplot2.html
 ```
 
 -   I can choose creative geometries (e.g., `geom_segment()`, `geom_ribbon)()`)
 
 ```{r}
 #| label: dvs-3-3
-#Challenge 4
-#Revised - I tried using a new geom to show similar information as my original graph but in a way that may be more clear to the viewer.
-colors <- c("#6C88C4", "#FF828B")
-challenge |>
-  select(type_of_care, Median_price, study_year) |>
-  group_by(type_of_care, study_year) |>
-  summarize(Mean = mean(Median_price),
-            sd = sd(Median_price),
-            type_of_care = type_of_care,
-            .groups = "drop") |>
-  mutate(ymin = Mean - sd,
-         ymax = Mean + sd) |>
-  ggplot(aes(x = study_year, y = Mean, color = type_of_care, fill = type_of_care)) +
-  geom_ribbon(aes(ymin = ymin, ymax = ymax, fill = type_of_care), 
-              alpha = 0.2, color = NA) +
+#Lab 10 Q13
+y = 1:100
+colors = c("#99afd7", "#ff0000")
+set.seed(123)
+table |>
+  mutate(ci = if_else(conf.high < 0.5 | conf.low > 0.5, "out","in")) |>
+  slice_sample(n = 100, replace = FALSE) |>
+  ggplot(mapping = aes(y, x = estimate, color = ci)) +
+  geom_errorbar(aes(xmin = conf.low, 
+                    xmax = conf.high)) +
   theme_bw() +
-  geom_line(size = 1) +
-  labs(x = "Study Year",
-       y = "",
-       color = "Type of Childcare",
-       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
-    scale_color_manual(values = colors) +
-    scale_fill_manual(values = colors) +
-    theme(legend.position = "none", 
-          plot.subtitle = element_markdown(),
-          panel.grid.minor.x = element_blank()) +
-    scale_x_continuous(n.breaks = 11)
+  geom_vline(xintercept = 0.5, linetype = "dashed", colour = "steelblue") +
+  annotate("text", x = 1, y = 104, label="Population slope = 0.5") + #https://ggplot2.tidyverse.org/reference/annotate.html
+  labs(y = " ",
+       x = "Slope Estimate",
+       title = "95% Confidence Intervals for Estimated Slope of 100 Random Simulations",
+       subtitle = "Confidence intervals not containing the population slope shown in <span style = 'color:#FF0000;'>red") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.subtitle = element_markdown())
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
@@ -992,7 +998,19 @@ arrange(desc(`2018 median household income`))
 
 ```{r}
 #| label: dvs-6-ex-2
+#Lab 9 Q6
 
+unformatted_evals |>
+  mutate(prop = str_c(round(prop *100, 2), "%")) |>  
+  kable(col.names = c("Demographic",
+                           "Group",
+                           "Count",
+                           "%"),
+        caption = "Demographics of Professors at the University of Poland, Warsaw in 2020") |> #https://stackoverflow.com/questions/51432502/replace-column-names-in-kable-r-markdown
+  kable_styling(full_width = FALSE,
+                latex_options = "basic") |>
+  add_header_above(c(" " = 2, "Professor" = 2)) |> #https://bookdown.org/yihui/rmarkdown-cookbook/kableextra.html
+  collapse_rows(columns = 1) 
 ```
 
 -   I can arrange my table to have an intuitive ordering
@@ -1017,6 +1035,15 @@ arrange(desc(`2018 median household income`))
 
 ```{r}
 #| label: dvs-7-ex-1
+fish |>
+  map_int(.f = ~sum(is.na(.x))) |>
+  enframe(name = "Measurement Variable",
+          value = "Missing Values") |>
+  gt() |>
+  tab_header(title = md("**Number of Missing Values for Fish Measurements**"),
+             subtitle = "Data collected from 1989 to 2006 on the Blackfoot River in Montana") |>
+  data_color(method = "numeric",
+             palette = c("#008080", "#be5103")) 
 
 ```
 
@@ -1024,6 +1051,32 @@ arrange(desc(`2018 median household income`))
 
 ```{r}
 #| label: dvs-7-ex-2
+
+unformatted_evals <- evals |>
+  distinct(teacher_id, .keep_all = TRUE) |>
+  select(academic_degree, seniority, sex) |>
+  mutate(academic_degree = str_replace_all(academic_degree, c("dr" = "Doctorate",
+                                                            "ma" = "Masters Degree",
+                                                            "no_dgr" = "No Degree",
+                                                            "prof" = "Tenured Professor")),
+         sex = str_replace_all(sex, c("female" = "Female",
+                                      "^male" = "Male")),
+         seniority = case_when(seniority <= 4 ~ "Junior",
+                             seniority > 4 & seniority < 9 ~ "Senior",
+                             seniority > 8 ~ "Very Senior")) |>
+  rename(`Academic Degree` = academic_degree,
+         Seniority = seniority,
+         Sex = sex) |>
+  pivot_longer(cols = everything(),
+               names_to = "Variable",
+               values_to = "Level") |>
+  count(Variable, Level) |>
+  group_by(Variable) |>
+  mutate(prop = n / sum(n)) |>
+  ungroup() |>
+  kable() |>
+  kable_styling(full_width = FALSE,
+                bootstrap_options = "striped")
 
 ```
 
@@ -1240,13 +1293,51 @@ ggplot(mapping = aes(x = study_year,
 ```{r}
 #| label: dsm-1-1
 
+#Lab 10 Q
+mycifun <- function(beta0, beta1, n){
+  intercept = beta0
+  slope = beta1
+  x = runif(n)
+  ep = rnorm(n)
+  y = intercept + x*slope + ep
+  df2 <- data.frame(x = x, y = y)
+  model2 <- lm(y~x, data = df2)
+  broom::tidy(model2, 
+            conf.int = TRUE, 
+            conf.level = 0.95) |>
+  filter(term == "x") |>
+  mutate(cover = if_else(beta1 > conf.low & 
+                          beta1 < conf.high, 
+                          1, 
+                          0)) |>
+    select(estimate, conf.low, conf.high, cover)
+  
+}
 ```
 
 -   Example 2
 
 ```{r}
 #| label: dsm-1-2
-
+mycifun <- function(beta0, beta1, n){
+  intercept = beta0
+  slope = beta1
+  x = runif(n)
+  ep = rnorm(n)
+  y = intercept + x*slope + ep
+  df2 <- data.frame(x = x, y = y)
+  model2 <- lm(y~x, data = df2)
+  broom::tidy(model2, 
+            conf.int = TRUE, 
+            conf.level = 0.95) |>
+  filter(term == "x") |>
+  mutate(cover = if_else(beta1 > conf.low & 
+                          beta1 < conf.high, 
+                          1, 
+                          0)) |>
+    select(estimate, conf.low, conf.high, cover)
+  
+}
 ```
 
 **DSSM-2: I can conduct common statistical analyses in R.**
