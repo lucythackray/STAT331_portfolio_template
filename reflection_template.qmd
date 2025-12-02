@@ -215,7 +215,11 @@ select(course_id, SET_level, sen_level)
 
 ```{r}
 #| label: wd-4-numeric-ex-2
+#Challenge 7 Q3
 
+trout_likely <- trout_cm |>
+  mutate(length = replace_unlikely(length, 5, 80),
+         weight = replace_unlikely(weight, 10, 4000))
 ```
 
 -   Factor Example 1 (renaming levels)
@@ -1084,21 +1088,56 @@ surveys|>
 
 ```{r}
 #| label: pe-2-1
+#Lab 7 Q4
 
+rescale_01 <- function(x) {
+   if (!is.numeric(x))  return(NA)
+   if (!length(x) > 1) return(NA) 
+   rge <- range(x, na.rm = TRUE)
+   (x - rge[1]) / (rge[2] - rge[1])
+}
 ```
 
 -   Example 2: Function that operates on data frames
 
 ```{r}
 #| label: pe-2-2
+#Lab 8 Q3
 
+boxplot <- function(df, cat_var, num_var){
+  y_title <- as_label(ensym(num_var)) |>
+    str_to_title("y_title") |>
+    str_replace_all(pattern ="_", replacement = " ")
+  
+  x_title <- as_label(ensym(cat_var)) |>
+    str_to_title("x_title") |>
+     str_replace_all(pattern ="_", replacement = " ")
+  
+  label <- rlang::englue("Boxplot of {{y_title}} across {{x_title}}")
+  
+  df|>
+    ggplot(mapping = aes(x = {{cat_var}}, y= {{num_var}}, fill = {{cat_var}})) +
+    geom_boxplot() +
+    labs(x = x_title,
+         y = "",
+         title = label) +
+    theme(legend.position = "none")
+}
 ```
 
 -   Example 3: Function that operates on vectors *or* data frames
 
 ```{r}
 #| label: pe-2-3
-
+#Challenge 7 Q2
+replace_unlikely <- function(x, min, max){
+  if (!is.numeric(x))  return(NA)
+  if (!length(x) > 1) return(NA)
+  
+  case_when(x > max ~ NA,
+            x < min ~ NA, 
+            .default = x)
+}
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
@@ -1121,14 +1160,25 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: pe-3-map-1
+#Lab 9 Q4
 
+evals |>
+  map_if(.p = is.character,
+         .f = as.factor) |>
+  bind_cols()
 ```
 
 -   using a `map()` function with **more than one** input (e.g., `map_2()` or `pmap()`)
 
 ```{r}
 #| label: pe-3-map-2
+#Lab 9 Q7
 
+fish |>
+  map_int(.f = ~sum(is.na(.x))) |>
+  enframe(name = "Measurement Variable",
+          value = "Missing Values") |>
+  gt()
 ```
 
 **PE-4: I can use modern tools when carrying out my analysis.**
