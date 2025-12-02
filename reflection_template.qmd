@@ -44,6 +44,7 @@ surveys<-read_csv(here::here("Week 2", "surveys.csv"))
 
 ```{r}
 #| label: wd-1-xlsx
+#PA 4
 military <- read_xlsx("gov_spending_per_capita.xlsx",
                       sheet = "Share of Govt. spending",
                       skip  = 7,
@@ -187,7 +188,7 @@ inner_join(y = drivers_license,
 crime_scene_report |>
 mutate(date = ymd(date)) |>
 filter(type == "murder",
-       date == as.Date("2018-01-15"),
+       date == mdy("011518"),
        city == "SQL City") |>
 pull(description)
 
@@ -214,14 +215,6 @@ select(course_id, SET_level, sen_level)
 
 ```{r}
 #| label: wd-4-numeric-ex-2
-#Challenge 3 Q1
-teacher_evals_compare <- evals |>
-filter(question_no == "903") |>
-mutate(SET_level = if_else(SET_score_avg >= 4, "excellent", "standard"),
-       sen_level = case_when(seniority <= 4 ~ "junior",
-                             seniority > 4 & seniority < 9 ~ "senior",
-                             seniority > 8 ~ "very senior")) |>
-select(course_id, SET_level, sen_level)
 
 ```
 
@@ -509,7 +502,16 @@ filter(academic_degree %in% c("dr", "prof")) |>
 
 ```{r}
 #| label: r-2-3
+#challenge 7
 
+replace_unlikely <- function(x, min, max){
+  if (!is.numeric(x))  return(NA)
+  if (!length(x) > 1) return(NA)
+  
+  case_when(x > max ~ NA,
+            x < min ~ NA, 
+            .default = x)
+}
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
@@ -584,39 +586,27 @@ scale_color_manual(values = colors)
 
 ```{r}
 #| label: dvs-2-cat
-#Lab 4 Q7
+#Lab 7
 
-#I strongly recommend against nested functions, as they are difficult for people to understand what your code is doing. Having two lines is not less efficient and is more readable.
+colors <- c("coral1", "cornflowerblue")
 
-colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
-ca_childcare |>
-select(starts_with("mc_"),
-       study_year,
-       region) |>
-rename(Infant = mc_infant,
-       Toddler = mc_toddler,
-       Preschool = mc_preschool ) |>
-pivot_longer(cols = Infant: Preschool, 
-             names_to = "Age_class", 
-             values_to = "Median_price") |>
-mutate(Age_class = factor(Age_class, c("Infant", "Toddler", "Preschool"))) |>
-ggplot(mapping = aes(x = study_year, 
-                     y = Median_price, 
-                     color = fct_reorder2(.f = region,
-                                          .x = study_year,
-                                          .y = Median_price))) + 
-  geom_point(size = 0.5) +
-  facet_wrap(~Age_class) + #https://forum.posit.co/t/re-ordering-facet-wrap/141999
+trout |>
+ filter(if_any(.cols = everything(),  
+               .fns = ~ is.na(.x))) |>
+  mutate(trip = as.factor(trip),
+         year = as.factor(year)) |>
+  mutate(trip = fct_recode(trip, `Trip 1` = "1", `Trip 2` = "2")) |>
+  ggplot(mapping = aes(x = year, fill = section)) +
+    geom_bar(stat = "count", position = "dodge") +
+  facet_wrap("trip") +
   theme_bw() +
-  theme(aspect.ratio = 1) +
-  geom_smooth(method = loess, size = 0.5) +
-  labs(x = "Study Year", 
-       y = " ", 
-       subtitle = "Weekly Median Price for Center Based Childcare ($)",
-       color = "California Region") +
-  scale_x_continuous(n.breaks = 6) +
-  scale_color_manual(values = colors) +
-  theme(text = element_text(size = 7)) 
+  scale_fill_manual(values = colors) +
+  labs(x = "Year", 
+       y = "",
+       title = "Missing Values for Trout Length by Year, Trip, and Section",
+       subtitle = "Number of NAs by Year",
+       fill = "Section") +
+   theme(text = element_text(size = 9)) 
 ```
 
 -   Dates (time series plot)
@@ -624,6 +614,8 @@ ggplot(mapping = aes(x = study_year,
 ```{r}
 #| label: dvs-2-date
 #Lab 4 Q7
+
+#I strongly recommend against nested functions, as they are difficult for people to understand what your code is doing. Having two lines is not less efficient and is more readable.
 
 colors <- colorRampPalette(brewer.pal(7, "Accent"))(10)
 ca_childcare |>
@@ -916,15 +908,11 @@ challenge |>
 
 ```{r}
 #| label: dvs-4-summarize
-#Lab 3 Q10
-teacher_evals_clean |>
-  group_by(teacher_id) |>
-  filter(n_distinct(course_id) >= 5, 
-         question_no == "901") |>
-  summarize(mean_rating = mean(SET_score_avg)) |>
-  filter(mean_rating == max(mean_rating) | 
-         mean_rating == min(mean_rating)) |>
-  arrange(mean_rating) 
+#Lab 3 Q6
+
+summarize(teacher_evals_clean, 
+          n_distinct(teacher_id),
+          n_distinct(course_id))
 
 ```
 
@@ -932,6 +920,11 @@ teacher_evals_clean |>
 
 ```{r}
 #| label: dvs-4-across
+#Lab 7 Q1
+
+trout_nas <- trout |>
+  summarise(across(.cols = everything(), 
+                   .fns = ~sum(is.na(.x))))
 
 ```
 
@@ -1078,7 +1071,11 @@ teacher_evals_clean <- evals |>
 
 ```{r}
 #| label: pe-1-map-1
+#Lab 9 Q2
 
+surveys|>
+  map_chr(.f = ~ class(.x)) |>
+  enframe()
 ```
 
 **PE-2: I can write functions to reduce repetition in my code.**
