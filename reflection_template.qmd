@@ -44,7 +44,12 @@ surveys<-read_csv(here::here("Week 2", "surveys.csv"))
 
 ```{r}
 #| label: wd-1-xlsx
-
+military <- read_xlsx("gov_spending_per_capita.xlsx",
+                      sheet = "Share of Govt. spending",
+                      skip  = 7,
+                      n_max = 190,
+                      na = c(". .", "xxx", "..")
+                      )
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
