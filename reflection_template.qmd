@@ -689,6 +689,11 @@ scale_color_manual(values = colors)
 ```{r}
 #| label: dvs-2-ex-2
 #Lab 7 Q3
+
+#Wouldn't it be nice to know where the measurements for each year were? You could do this by forcing year to have levels where there were no observations or by converting it to categorical! How could you use yout plot title to convey additional information regarding the context of these data?
+
+#Modified to change year to a factor and have a more descriptive title
+
 colors <- c("coral1", "cornflowerblue")
 
 trout |>
@@ -999,6 +1004,8 @@ arrange(desc(`2018 median household income`))
 ```{r}
 #| label: dvs-6-ex-2
 #Lab 9 Q6
+#We have not learned the paste() or paste0() functions in this class! The str_c() function is the tool we have learned. Can you convert your solution to include the tool we’ve learned in class?
+#Modified to use stringr 
 
 unformatted_evals |>
   mutate(prop = str_c(round(prop *100, 2), "%")) |>  
@@ -1035,6 +1042,7 @@ arrange(desc(`2018 median household income`))
 
 ```{r}
 #| label: dvs-7-ex-1
+#Lab 9 Q8
 fish |>
   map_int(.f = ~sum(is.na(.x))) |>
   enframe(name = "Measurement Variable",
@@ -1051,7 +1059,7 @@ fish |>
 
 ```{r}
 #| label: dvs-7-ex-2
-
+#Lab 9 Q6
 unformatted_evals <- evals |>
   distinct(teacher_id, .keep_all = TRUE) |>
   select(academic_degree, seniority, sex) |>
@@ -1183,6 +1191,9 @@ boxplot <- function(df, cat_var, num_var){
 ```{r}
 #| label: pe-2-3
 #Challenge 7 Q2
+#Where are your function checks? What types of inputs does your function expect?
+#Modified to add function checks
+
 replace_unlikely <- function(x, min, max){
   if (!is.numeric(x))  return(NA)
   if (!length(x) > 1) return(NA)
@@ -1284,7 +1295,7 @@ ggplot(mapping = aes(x = study_year,
   theme(text = element_text(size = 7)) 
 ```
 
-## Data Simulation & Statisical Models
+## Data Simulation & Statistical Models
 
 **DSSM-1: I can simulate data from a *variety* of probability models.**
 
