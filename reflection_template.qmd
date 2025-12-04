@@ -1181,17 +1181,20 @@ rescale_01 <- function(x) {
 ```{r}
 #| label: pe-2-2
 #Lab 8 Q3
+#It looks like you are doing the same process to both of your axis labels. Time for a helper function!
+#Revised to add the make_title function which I then can call inside the boxplot function to make my code more efficient
+make_title <- function(label){
+  title <- as_label(ensym(label)) |>
+    str_replace_all(pattern ="_", replacement = " ") |>
+    str_to_sentence() 
+  title
+}
 
 boxplot <- function(df, cat_var, num_var){
-  y_title <- as_label(ensym(num_var)) |>
-    str_to_title("y_title") |>
-    str_replace_all(pattern ="_", replacement = " ")
-  
-  x_title <- as_label(ensym(cat_var)) |>
-    str_to_title("x_title") |>
-     str_replace_all(pattern ="_", replacement = " ")
-  
-  label <- rlang::englue("Boxplot of {{y_title}} across {{x_title}}")
+
+  x_title <- make_title({{cat_var}})
+  y_title <- make_title({{num_var}})
+  label <- rlang::englue("Boxplot of {y_title} across {x_title}")
   
   df|>
     ggplot(mapping = aes(x = {{cat_var}}, y= {{num_var}}, fill = {{cat_var}})) +
@@ -1209,7 +1212,7 @@ boxplot <- function(df, cat_var, num_var){
 #| label: pe-2-3
 #Challenge 7 Q2
 #Where are your function checks? What types of inputs does your function expect?
-#Modified to add function checks
+#Modified to add function checks to ensure input is numeric and of length 1
 
 replace_unlikely <- function(x, min, max){
   if (!is.numeric(x))  return(NA)
@@ -1320,8 +1323,7 @@ ggplot(mapping = aes(x = study_year,
 
 ```{r}
 #| label: dsm-1-1
-
-#Lab 10 Q
+#Lab 10 Q8
 mycifun <- function(beta0, beta1, n){
   intercept = beta0
   slope = beta1
@@ -1347,25 +1349,23 @@ mycifun <- function(beta0, beta1, n){
 
 ```{r}
 #| label: dsm-1-2
-mycifun <- function(beta0, beta1, n){
-  intercept = beta0
-  slope = beta1
-  x = runif(n)
-  ep = rnorm(n)
-  y = intercept + x*slope + ep
-  df2 <- data.frame(x = x, y = y)
-  model2 <- lm(y~x, data = df2)
-  broom::tidy(model2, 
-            conf.int = TRUE, 
-            conf.level = 0.95) |>
-  filter(term == "x") |>
-  mutate(cover = if_else(beta1 > conf.low & 
-                          beta1 < conf.high, 
-                          1, 
-                          0)) |>
-    select(estimate, conf.low, conf.high, cover)
+#Lab 10 Q1
+randomBabies <- function(n_babies){
+  if (!is.numeric(n_babies)) return(NA)
+  tibble(baby = 1:n_babies,
+         parent = sample(1:n_babies, 
+                         size = n_babies, 
+                         replace = FALSE)) |>
   
+    filter(baby == parent) |>
+    count()|>
+    pull(n)
 }
+set.seed(98115)
+results <- map_int(.x = 1:10000,
+                   .f = ~randomBabies(n_babies = 4)
+                  )
+
 ```
 
 **DSSM-2: I can conduct common statistical analyses in R.**
@@ -1377,7 +1377,7 @@ mycifun <- function(beta0, beta1, n){
 #Lab 2 Q17
 
 #Do you need to save an object here? All I want is to see the output...
-
+#Revised to not save an a=object
 summary(aov(weight~species, data = surveys))
 ```
 
