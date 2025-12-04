@@ -35,7 +35,7 @@ evals <- read_csv(here::here("Week 3", "teacher_evals.csv"))
 ```{r}
 #| label: wd-1-csv-2
 #Lab 2 Q1
-surveys<-read_csv(here::here("Week 2", "surveys.csv"))
+surveys <- read_csv(here::here("Week 2", "surveys.csv"))
 
 
 ```
@@ -184,7 +184,7 @@ inner_join(y = drivers_license,
 ```{r}
 #| label: wd-3-date
 #Lab 5
-#Revised to mutate date into a date object
+#Revised to mutate date into a date object and use mdy function
 crime_scene_report |>
 mutate(date = ymd(date)) |>
 filter(type == "murder",
@@ -411,7 +411,21 @@ interviewpeople |>
 
 ```{r}
 #| label: wd-6-anti
+#Lab 4 Q5
+#Modified to use an anti join instead of a filter to get a dataset with only the years 2008 and 2018.
+anti <- ca_childcare |>
+  filter(study_year != 2008, 
+         study_year != 2018) 
 
+ca_childcare |>
+anti_join(y = anti,
+          by = join_by(study_year == study_year)) |>
+pivot_wider(names_from = study_year,
+            values_from = mhi_2018) |> 
+group_by(region) |>
+summarize(`2008 median household income` = median(`2008`, na.rm = TRUE),
+          `2018 median household income` = median(`2018`, na.rm = TRUE)) |>
+arrange(desc(`2018 median household income`))
 ```
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
@@ -509,6 +523,7 @@ filter(academic_degree %in% c("dr", "prof")) |>
 #challenge 7
 
 replace_unlikely <- function(x, min, max){
+  
   if (!is.numeric(x))  return(NA)
   if (!length(x) > 1) return(NA)
   
@@ -524,14 +539,16 @@ replace_unlikely <- function(x, min, max){
 
 ```{r}
 #| label: r-3-example
-#Lab 4 Q6
-ca_childcare |>
-select(study_year, region, mcsa) |>
-filter(study_year == 2018) |>
-group_by(region) |>
-summarize(mcsa = median(mcsa)) |>
-ungroup() |>
-filter(mcsa == min(mcsa)) 
+#Lab 8 Q2
+pivot_table <- function(df, row, col){
+  df |>
+  count({{row}},  {{col}}) |>
+  pivot_wider(names_from = {{col}}, 
+              values_from = n, 
+              values_fill = 0) |>
+   adorn_totals(where = c("row", "col")) |>
+  kable()
+}
 ```
 
 -   Example (function stops)
