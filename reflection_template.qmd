@@ -826,25 +826,28 @@ ggplot(mapping = aes(x = study_year,
 
 ```{r}
 #| label: dvs-3-1-ex-1
-#Challenge 4 Plot
-colors <- c("#6C88C4", "#FF828B")
-challenge |>
- mutate(year = as.factor(study_year)) |>
-  ggplot(mapping = aes(x = year,
-                       y = Median_price,
-                       color = type_of_care)) +
-          
+#Lab 10 Q13
+y = 1:100
+colors = c("#99afd7", "#ff0000")
+set.seed(123)
+table |>
+  mutate(ci = if_else(conf.high < 0.5 | conf.low > 0.5, "out","in")) |>
+  slice_sample(n = 100, replace = FALSE) |>
+  ggplot(mapping = aes(y, x = estimate, color = ci)) +
+  geom_errorbar(aes(xmin = conf.low, 
+                    xmax = conf.high)) +
   theme_bw() +
-  geom_jitter (alpha = 0.5, aes(color = type_of_care), show.legend = FALSE) +
-  geom_boxplot(outliers = FALSE) +
-  labs(x = "Study Year",
-       y = "",
-       color = "Type of Childcare",
-       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
-    scale_color_manual(values = colors) +
-  theme(legend.position = "none", 
-        plot.subtitle = element_markdown(),
-        panel.grid.major.x = element_blank()) 
+  geom_vline(xintercept = 0.5, linetype = "dashed", colour = "steelblue") +
+  annotate("text", x = 1, y = 104, label="Population slope = 0.5") + #https://ggplot2.tidyverse.org/reference/annotate.html
+  labs(y = " ",
+       x = "Slope Estimate",
+       title = "95% Confidence Intervals for Estimated Slope of 100 Random Simulations",
+       subtitle = "Confidence intervals not containing the population slope shown in <span style = 'color:#FF0000;'>red") +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none",
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.subtitle = element_markdown())
 ```
 
 -   I can use non-standard colors (Example 2)
@@ -910,28 +913,33 @@ theme(legend.position = "none") #https://r-graph-gallery.com/239-custom-layout-l
 
 ```{r}
 #| label: dvs-3-3
-#Lab 10 Q13
-y = 1:100
-colors = c("#99afd7", "#ff0000")
-set.seed(123)
-table |>
-  mutate(ci = if_else(conf.high < 0.5 | conf.low > 0.5, "out","in")) |>
-  slice_sample(n = 100, replace = FALSE) |>
-  ggplot(mapping = aes(y, x = estimate, color = ci)) +
-  geom_errorbar(aes(xmin = conf.low, 
-                    xmax = conf.high)) +
+#Challenge 4
+#Revised - I tried using a new geom to show similar information as my original graph but in a way that may be more clear to the viewer.
+colors <- c("#6C88C4", "#FF828B")
+challenge |>
+  select(type_of_care, Median_price, study_year) |>
+  group_by(type_of_care, study_year) |>
+  summarize(Mean = mean(Median_price),
+            sd = sd(Median_price),
+            type_of_care = type_of_care,
+            .groups = "drop") |>
+  mutate(ymin = Mean - sd,
+         ymax = Mean + sd) |>
+  ggplot(aes(x = study_year, y = Mean, color = type_of_care, fill = type_of_care)) +
+  geom_ribbon(aes(ymin = ymin, ymax = ymax, fill = type_of_care), 
+              alpha = 0.2, color = NA) +
   theme_bw() +
-  geom_vline(xintercept = 0.5, linetype = "dashed", colour = "steelblue") +
-  annotate("text", x = 1, y = 104, label="Population slope = 0.5") + #https://ggplot2.tidyverse.org/reference/annotate.html
-  labs(y = " ",
-       x = "Slope Estimate",
-       title = "95% Confidence Intervals for Estimated Slope of 100 Random Simulations",
-       subtitle = "Confidence intervals not containing the population slope shown in <span style = 'color:#FF0000;'>red") +
-  scale_color_manual(values = colors) +
-  theme(legend.position = "none",
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        plot.subtitle = element_markdown())
+  geom_line(size = 1) +
+  labs(x = "Study Year",
+       y = "",
+       color = "Type of Childcare",
+       subtitle = "Weekly Median Price ($) for <span style = 'color:#6C88C4;'>Center Based</span> vs <span style = 'color:#FF828B;'>Family</span> Childcare") +
+    scale_color_manual(values = colors) +
+    scale_fill_manual(values = colors) +
+    theme(legend.position = "none", 
+          plot.subtitle = element_markdown(),
+          panel.grid.minor.x = element_blank()) +
+    scale_x_continuous(n.breaks = 11)
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
