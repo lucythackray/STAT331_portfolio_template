@@ -6,16 +6,20 @@ editor: visual
 
 **Answer each of the following questions with *one sentence* including a brief explanation.**
 
-1. Finish the sentence with another student’s name: "If [Name of Student] doesn’t earn an A, then nobody should, because..." Explain your choice and your reasoning.
+1.  Finish the sentence with another student’s name: "If Theodore doesn’t earn an A, then nobody should, because when we did practice activities together he was extremely knowledgable and helpful.
 
+2.  What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
 
-2. What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
+    The most difficult part for me was learning about the stringr functions, and especially regular expression because they were just very unintuitive to me and I had never used anything like that.
 
+3.  What was the easiest part of the class for you? Explain why.
 
-3. What was the easiest part of the class for you? Explain why.
+    I think the easiest part for me was making plots because that is the main thing I had used r for before this class, although I definitely improved my plot making skills throughout this class.
 
+4.  What part of the class surprised or interested you the most? Explain why.
 
-4. What part of the class surprised or interested you the most? Explain why.
+    I was most interested by the dplyr functions since I have often come across them while trying to do things in r and I have always just avoided them because I didn't understand how they worked, so I am excited to know how to use them now.
 
+5.  Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
 
-5. Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+    Write out a schedule of the weekly due dates since there are a lot, and make sure to stay on top of them.
